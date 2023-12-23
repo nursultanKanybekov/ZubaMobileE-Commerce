@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/home_menu"
+        android:title="Товары"
+        android:icon="@drawable/baseline_home_24"/>
+
+    <item
+        android:id="@+id/search_menu"
+        android:title="Поиск"
+        android:icon="@drawable/baseline_search_24"/>
+
+    <item
+        android:id="@+id/basket_menu"
+        android:title="Basket"
+        android:icon="@drawable/baseline_shopping_basket_24" />
+    <item
+        android:id="@+id/login_menu"
+        android:title="Профиль"
+        android:icon="@drawable/baseline_person_24"/>
+
+    <item
+        android:id="@+id/menu_menu"
+        android:title="Категория"
+        android:icon="@drawable/baseline_menu_24"/>
+
+</menu>
