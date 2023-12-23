@@ -19,17 +19,15 @@ import com.example.zuba.services.MyDatabaseOperationsServices;
 import com.example.zuba.services.ProductApiClientService;
 
 public class LoginTabFragment extends Fragment {
-    MyDatabaseOperationsServices myDatabaseOperationsServices;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_login_tab, container, false);
-        myDatabaseOperationsServices = new MyDatabaseOperationsServices(getContext());
-        myDatabaseOperationsServices.open();
-        myDatabaseOperationsServices.upgradeDatabase();
-        myDatabaseOperationsServices.close();
+//        MyDatabaseOperationsServices myDatabaseOperationsServices = new MyDatabaseOperationsServices(getContext());
+//        myDatabaseOperationsServices.open();
+//        myDatabaseOperationsServices.upgradeDatabase();
+//        myDatabaseOperationsServices.close();
         Button button = view.findViewById(R.id.login_button);
         EditText login = view.findViewById(R.id.login_email);
         EditText password = view.findViewById(R.id.login_password);
@@ -39,7 +37,6 @@ public class LoginTabFragment extends Fragment {
                 new ProductApiClientService(getContext()).loginPage(new LoginModel(login.getText().toString(), password.getText().toString()));
             else
                 Toast.makeText(getContext(), "Пароль или телефон номер не должна быть пустым", Toast.LENGTH_LONG).show();
-            getContext().startActivity(new Intent(getContext(), PurchaseActivity.class));
         });
         return view;
     }
