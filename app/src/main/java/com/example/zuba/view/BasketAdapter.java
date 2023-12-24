@@ -27,6 +27,7 @@ import com.example.zuba.services.MyDatabaseOperationsServices;
 import java.util.List;
 
 public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.BasketViewHolder> {
+
     private List<ProductsModel> productsModelList;
     private Context context;
     private MyDatabaseOperationsServices databaseOperations;
@@ -104,10 +105,21 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.BasketView
     }
 
     public void refreshFragment() {
-        androidx.fragment.app.FragmentTransaction ft = fragment.requireActivity().getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.frame_layout, new BasketFragment());
-        ft.addToBackStack(null);
-        ft.commit();
+        Fragment currentFragment = fragment.requireActivity().getSupportFragmentManager().findFragmentById(R.id.frame_layout);
+
+        if (currentFragment instanceof BasketFragment) {
+            BasketFragment newFragment = new BasketFragment();
+            FragmentTransaction ft = fragment.requireActivity().getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.frame_layout, newFragment);
+            ft.addToBackStack(null);
+            ft.commit();
+        }
+    }
+
+
+    public void setProductsModelList(List<ProductsModel> productsModelList) {
+        this.productsModelList = productsModelList;
+        notifyDataSetChanged();
     }
 
     class BasketViewHolder extends RecyclerView.ViewHolder {

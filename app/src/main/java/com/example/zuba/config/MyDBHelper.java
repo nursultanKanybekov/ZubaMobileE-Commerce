@@ -26,9 +26,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
     }
 
     private void dropTables(SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS mytable");
         db.execSQL("DROP TABLE IF EXISTS purches");
-        db.execSQL("DROP TABLE IF EXISTS images_table");
     }
 
     private void createTables(SQLiteDatabase db) {
@@ -47,10 +45,5 @@ public class MyDBHelper extends SQLiteOpenHelper {
         db.execSQL(createTableQueryPurches);
     }
 
-    public void clearTable() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete("purches", null, null);
-        db.close();
-    }
 }
 

@@ -113,8 +113,8 @@ public class ProductApiClientService {
                 .build();
         registerRepo = retrofit.create(RegisterRepo.class);
         sendContactRepo = retrofit.create(SendContactRepo.class);
-        orderCreateRepo = retrofit.create(OrderCreateRepo.class);
         loginRepo = retrofit.create(LoginRepo.class);
+        orderCreateRepo = retrofit.create(OrderCreateRepo.class);
         countryApiRepo = retrofit.create(CountryApiRepo.class);
         regionApiRepo = retrofit.create(RegionApiRepo.class);
         villageApiRepo = retrofit.create(VillageApiRepo.class);
@@ -379,7 +379,7 @@ public class ProductApiClientService {
         });
     }
 
-    public void purches(OrderCreateModel orderCreateModel) {
+    public void purches(OrderCreateModel orderCreateModel, BasketAdapter basketAdapter) {
         String token = retrieveToken(context);
         if (token != null && !token.isEmpty()) {
             String authorizationHeader = "Bearer " + token;
@@ -389,19 +389,11 @@ public class ProductApiClientService {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()) {
-                        RequestBody requestBody = call.request().body();
-                        if (requestBody != null) {
-                            try {
-                                Buffer buffer = new Buffer();
-                                requestBody.writeTo(buffer);
-                                String requestBodyString = buffer.readUtf8();
-                                System.out.println("Request Body: " + requestBodyString);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        MyDBHelper myDBHelper = new MyDBHelper(context);
-                        myDBHelper.clearTable();
+                        MyDatabaseOperationsServices myDatabaseOperationsServices = new MyDatabaseOperationsServices(context);
+                        myDatabaseOperationsServices.open();
+                        myDatabaseOperationsServices.upgradeDatabase();
+                        myDatabaseOperationsServices.close();
+                        basketAdapter.refreshFragment();
                         dialogPagesServices.confirmDialog("Поздравляю, скоро свяжется");
                     } else {
                         dialogPagesServices.confirmDialog("Извините за неудобство, были проблемы \nможете заново заполнить поля и отправить");

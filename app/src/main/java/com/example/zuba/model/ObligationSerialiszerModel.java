@@ -6,20 +6,9 @@ public class ObligationSerialiszerModel {
     private int initial_payment;
     private int paid;
     private int reminder;
-    private int price_per_month;
+    private double price_per_month;
     private String deadline;
     private String next_date_payment;
-
-    public ObligationSerialiszerModel(int id, int total_price, int initial_payment, int paid, int reminder, int price_per_month, String deadline, String next_date_payment) {
-        this.id = id;
-        this.total_price = total_price;
-        this.initial_payment = initial_payment;
-        this.paid = paid;
-        this.reminder = reminder;
-        this.price_per_month = price_per_month;
-        this.deadline = deadline;
-        this.next_date_payment = next_date_payment;
-    }
 
     public int getId() {
         return id;
@@ -61,11 +50,11 @@ public class ObligationSerialiszerModel {
         this.reminder = reminder;
     }
 
-    public int getPrice_per_month() {
+    public double getPrice_per_month() {
         return price_per_month;
     }
 
-    public void setPrice_per_month(int price_per_month) {
+    public void setPrice_per_month(double price_per_month) {
         this.price_per_month = price_per_month;
     }
 

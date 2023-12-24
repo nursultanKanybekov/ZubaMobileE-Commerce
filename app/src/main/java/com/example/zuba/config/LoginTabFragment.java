@@ -24,14 +24,13 @@ public class LoginTabFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_login_tab, container, false);
-//        MyDatabaseOperationsServices myDatabaseOperationsServices = new MyDatabaseOperationsServices(getContext());
-//        myDatabaseOperationsServices.open();
-//        myDatabaseOperationsServices.upgradeDatabase();
-//        myDatabaseOperationsServices.close();
         Button button = view.findViewById(R.id.login_button);
         EditText login = view.findViewById(R.id.login_email);
         EditText password = view.findViewById(R.id.login_password);
-
+        MyDatabaseOperationsServices myDatabaseOperationsServices = new MyDatabaseOperationsServices(getContext());
+        myDatabaseOperationsServices.open();
+        myDatabaseOperationsServices.upgradeDatabase();
+        myDatabaseOperationsServices.close();
         button.setOnClickListener(v -> {
             if (!login.getText().toString().equals("") && !password.toString().equals(""))
                 new ProductApiClientService(getContext()).loginPage(new LoginModel(login.getText().toString(), password.getText().toString()));

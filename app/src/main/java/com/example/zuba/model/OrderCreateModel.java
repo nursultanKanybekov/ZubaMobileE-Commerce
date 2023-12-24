@@ -3,10 +3,10 @@ package com.example.zuba.model;
 import java.util.List;
 
 public class OrderCreateModel {
-    private int total;
+    private double total;
     private int paid;
     private int term;
-    private int i_p;
+    private double i_p;
     private boolean agreement;
     private AddressSerialzerModel address;
     private List<OrderItem> order_item;
@@ -21,11 +21,11 @@ public class OrderCreateModel {
         this.order_item = order_item;
     }
 
-    public int getTotal() {
+    public double getTotal() {
         return total;
     }
 
-    public void setTotal(int total) {
+    public void setTotal(double total) {
         this.total = total;
     }
 
@@ -45,11 +45,11 @@ public class OrderCreateModel {
         this.term = term;
     }
 
-    public int getI_p() {
+    public double getI_p() {
         return i_p;
     }
 
-    public void setI_p(int i_p) {
+    public void setI_p(double i_p) {
         this.i_p = i_p;
     }
 

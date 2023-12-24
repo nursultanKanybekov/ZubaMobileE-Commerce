@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -16,6 +17,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.widget.Toast;
 
 import com.example.zuba.R;
 import com.example.zuba.model.OrderCreateModel;
@@ -25,7 +27,7 @@ public class DialogPagesServices {
     private Context context;
     private ImageView profileCredit;
     private Switch switchAgreement;
-    private EditText etPaid, etTerm, etIP;
+    private EditText etTerm, etIP;
 
     public DialogPagesServices(Context context) {
         this.context = context;
@@ -34,7 +36,6 @@ public class DialogPagesServices {
     public void showFormDialog(OrderDialogCallback callback) {
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_form, null);
 
-        etPaid = view.findViewById(R.id.etPaid);
         etTerm = view.findViewById(R.id.etTerm);
         etIP = view.findViewById(R.id.etIP);
         switchAgreement = view.findViewById(R.id.switchAgreement);
@@ -43,21 +44,31 @@ public class DialogPagesServices {
         profileCredit.setOnClickListener(v -> {
             openCamera();
         });
+
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(view)
                 .setTitle("Кредит")
-                .setPositiveButton("Отправить", (dialog, which) -> {
-                    int paid = Integer.parseInt(etPaid.getText().toString());
-                    int term = Integer.parseInt(etTerm.getText().toString());
-                    int ip = Integer.parseInt(etIP.getText().toString());
-                    boolean agreement = switchAgreement.isChecked();
-                    orderCreateModel = new OrderCreateModel(0, paid, term, ip, agreement, null, null);
-                    callback.onOrderCreated(orderCreateModel);
-                })
-                .setNegativeButton("Cancel", ((dialog, which) -> callback.onCancel()))
-                .create()
-                .show();
+                .setPositiveButton("Отправить", null)
+                .setNegativeButton("Cancel", ((dialog, which) -> callback.onCancel()));
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+        Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        positiveButton.setOnClickListener(v -> {
+            if (!switchAgreement.isChecked()) {
+                confirmDialog("Пожалуйста, согласитесь на условию!");
+            } else {
+                int term = Integer.parseInt(etTerm.getText().toString());
+                boolean agreement = switchAgreement.isChecked();
+                orderCreateModel = new OrderCreateModel(0, 2, term, 0, agreement, null, null);
+                callback.onOrderCreated(orderCreateModel);
+
+                alertDialog.dismiss();
+            }
+        });
     }
+
 
     public void confirmDialog(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);

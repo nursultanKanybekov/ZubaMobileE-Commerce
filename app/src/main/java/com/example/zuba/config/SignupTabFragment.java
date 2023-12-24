@@ -2,6 +2,7 @@ package com.example.zuba.config;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -35,6 +36,7 @@ import com.example.zuba.services.VillageCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public class SignupTabFragment extends Fragment {
@@ -69,9 +71,7 @@ public class SignupTabFragment extends Fragment {
         set_image_button = view.findViewById(R.id.set_image_button);
 
         productApiClientService = new ProductApiClientService(getContext());
-        set_image_button.setOnClickListener(v -> {
-            openGallery();
-        });
+        set_image_button.setOnClickListener(v -> openGallery());
 
         signup_button = view.findViewById(R.id.signup_button);
         setSpinner();
@@ -87,8 +87,7 @@ public class SignupTabFragment extends Fragment {
                     productApiClientService.register(new RegisterModel(signup_email.getText().toString(), signup_password.getText().toString(),
                             new ProfileModel(name.getText().toString(), surname.getText().toString(), Integer.parseInt(gender.getText().toString()),
                                     new AddressSerialzerModel(exact_address.getText().toString(), countryS,
-                                            regionS, villageS),
-                                    base64String)));
+                                            regionS, villageS), base64String)));
                 else
                     Toast.makeText(getContext(), "Пароли не похожи", Toast.LENGTH_LONG).show();
             }
@@ -227,9 +226,14 @@ public class SignupTabFragment extends Fragment {
         if (requestCode == 1 && resultCode == AppCompatActivity.RESULT_OK && data != null && data.getData() != null) {
             try {
                 Uri selectedImageUri = data.getData();
-                Bitmap selectedBitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), selectedImageUri);
-                base64String = convertBitmapToBase64(selectedBitmap);
-                requireActivity().getSupportFragmentManager().beginTransaction().detach(this).attach(this).commit();
+                Bitmap selectedBitmap = resizeBitmap(selectedImageUri);
+
+                if (selectedBitmap != null) {
+                    base64String = convertBitmapToBase64(selectedBitmap);
+                    requireActivity().getSupportFragmentManager().beginTransaction().detach(this).attach(this).commit();
+                } else {
+                    Toast.makeText(requireContext(), "Error resizing the image", Toast.LENGTH_SHORT).show();
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -238,6 +242,44 @@ public class SignupTabFragment extends Fragment {
         }
     }
 
+    private Bitmap resizeBitmap(Uri uri) throws IOException {
+        final int MAX_WIDTH = 1024;
+        final int MAX_HEIGHT = 1024;
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        InputStream imageStream = requireActivity().getContentResolver().openInputStream(uri);
+        BitmapFactory.decodeStream(imageStream, null, options);
+        imageStream.close();
+
+        options.inSampleSize = calculateInSampleSize(options, MAX_WIDTH, MAX_HEIGHT);
+
+        options.inJustDecodeBounds = false;
+        imageStream = requireActivity().getContentResolver().openInputStream(uri);
+        Bitmap resizedBitmap = BitmapFactory.decodeStream(imageStream, null, options);
+        imageStream.close();
+
+        return resizedBitmap;
+    }
+
+    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
+
     private String convertBitmapToBase64(Bitmap bitmap) {
         if (bitmap != null) {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -245,7 +287,7 @@ public class SignupTabFragment extends Fragment {
             byte[] byteArray = byteArrayOutputStream.toByteArray();
             return Base64.encodeToString(byteArray, Base64.DEFAULT);
         } else {
-            return null; // Handle the case where the Bitmap is null
+            return null;
         }
     }
 

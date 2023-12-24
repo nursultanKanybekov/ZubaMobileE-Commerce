@@ -98,16 +98,17 @@ public class BasketFragment extends Fragment {
             });
         });
         order.setOnClickListener(v -> {
-            if (orderCreateModel != null) {
+            if (!exact_address.getText().toString().equals("")) {
                 addressSerialzerModel = new AddressSerialzerModel(exact_address.getText().toString(), countryS,
                         regionS, villageS);
-                orderCreateModel.setAddress(addressSerialzerModel);
-                orderCreateModel.setOrder_item(orderItems);
-                productApiClientService.purches(orderCreateModel);
-            } else productApiClientService.purches(new OrderCreateModel(0
-                    , 0, 0, 0, true,
-                    addressSerialzerModel, orderItems));
-            basketAdapter.refreshFragment();
+                if (orderCreateModel != null) {
+                    orderCreateModel.setAddress(addressSerialzerModel);
+                    orderCreateModel.setOrder_item(orderItems);
+                    productApiClientService.purches(orderCreateModel, basketAdapter);
+                } else productApiClientService.purches(new OrderCreateModel(1
+                        , 0, 0, 0, true,
+                        addressSerialzerModel, orderItems), basketAdapter);
+            } else Toast.makeText(getContext(),"Адрес не может быть пустым", Toast.LENGTH_SHORT).show();
         });
         myDatabaseOperationsServices.close();
         return view;
