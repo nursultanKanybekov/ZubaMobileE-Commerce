@@ -40,11 +40,11 @@ import java.io.InputStream;
 import java.util.List;
 
 public class SignupTabFragment extends Fragment {
-    private EditText signup_email, signup_password, signup_confirm, name, surname, gender, exact_address;
-    private Spinner country, region, village;
+    private EditText signup_email, signup_password, signup_confirm, name, surname, exact_address;
+    private Spinner country, region, village, gender;
     private Button signup_button, set_image_button;
     private String base64String;
-    private String countryS, regionS, villageS;
+    private String countryS, regionS, villageS, genderS;
     private ProductApiClientService productApiClientService;
     private List<CountryModel> countryModels;
     private List<RegionModel> regionModels;
@@ -78,14 +78,14 @@ public class SignupTabFragment extends Fragment {
         signup_button.setOnClickListener(v -> {
             if (signup_email.getText().toString().equals("") && signup_password.getText().toString().equals("")
                     && signup_confirm.getText().toString().equals("") && name.getText().toString().equals("") &&
-                    surname.getText().toString().equals("") && gender.getText().toString().equals("") &&
+                    surname.getText().toString().equals("") && genderS.equals("") &&
                     exact_address.getText().toString().equals("") && countryS.equals("") &&
                     regionS.equals("") && villageS.equals("")) {
                 Toast.makeText(getContext(), "Эти поля не может быть пустым", Toast.LENGTH_LONG).show();
             } else {
                 if (signup_password.getText().toString().contains(signup_confirm.getText().toString()))
                     productApiClientService.register(new RegisterModel(signup_email.getText().toString(), signup_password.getText().toString(),
-                            new ProfileModel(name.getText().toString(), surname.getText().toString(), Integer.parseInt(gender.getText().toString()),
+                            new ProfileModel(name.getText().toString(), surname.getText().toString(), Integer.parseInt(genderS),
                                     new AddressSerialzerModel(exact_address.getText().toString(), countryS,
                                             regionS, villageS), base64String)));
                 else
@@ -97,6 +97,7 @@ public class SignupTabFragment extends Fragment {
     }
 
     private void setSpinner() {
+        String[] genderType = {"Мужчина", "Женщина"};
         productApiClientService.getCountry(new CountryCallback() {
             @Override
             public void onSuccess(List<CountryModel> products) {
@@ -133,6 +134,28 @@ public class SignupTabFragment extends Fragment {
             @Override
             public void onFailure(String errorMessage) {
                 SignupTabFragment.this.villageModels = null;
+            }
+        });
+
+        ArrayAdapter<String> genderAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                genderType
+        );
+        genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        gender.setAdapter(genderAdapter);
+
+        gender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if (parentView.getItemAtPosition(position).toString().equals("Мужчина"))
+                    genderS = "0";
+                else genderS = "1";
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                genderS = "0";
             }
         });
     }

@@ -93,7 +93,7 @@ public class BasketFragment extends Fragment {
 
                 @Override
                 public void onCancel() {
-                    Toast.makeText(getContext(), "Not send", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Отменено кредит", Toast.LENGTH_LONG).show();
                 }
             });
         });
@@ -108,6 +108,8 @@ public class BasketFragment extends Fragment {
                 } else productApiClientService.purches(new OrderCreateModel(1
                         , 0, 0, 0, true,
                         addressSerialzerModel, orderItems), basketAdapter);
+
+
             } else Toast.makeText(getContext(),"Адрес не может быть пустым", Toast.LENGTH_SHORT).show();
         });
         myDatabaseOperationsServices.close();

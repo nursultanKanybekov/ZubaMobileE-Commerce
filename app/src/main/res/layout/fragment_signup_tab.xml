@@ -86,7 +86,7 @@
                 android:hint="ФИО"
                 android:padding="8dp" />
 
-            <EditText
+            <Spinner
                 android:id="@+id/gender"
                 android:layout_width="300dp"
                 android:layout_height="60dp"

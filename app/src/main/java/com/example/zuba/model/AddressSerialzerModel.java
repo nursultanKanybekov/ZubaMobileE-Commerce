@@ -1,7 +1,6 @@
 package com.example.zuba.model;
 
 public class AddressSerialzerModel {
-    private int id;
     private String exact_address;
     private String country;
     private String region;
@@ -12,14 +11,6 @@ public class AddressSerialzerModel {
         this.country = country;
         this.region =region;
         this.villige = villige;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getExact_address() {

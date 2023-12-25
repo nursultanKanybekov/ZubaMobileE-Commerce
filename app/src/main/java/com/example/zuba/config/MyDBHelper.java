@@ -15,7 +15,23 @@ public class MyDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-       createTables(db);
+       createAllTables(db);
+    }
+
+    private void createAllTables(SQLiteDatabase db) {
+        String createTableQueryPurches = "CREATE TABLE IF NOT EXISTS purches (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "name TEXT, description TEXT, price INTEGER, stock INTEGER, available INTEGER, " +
+                "created TEXT, updated TEXT, category INTEGER, shop INTEGER)";
+        db.execSQL(createTableQueryPurches);
+
+        String createTableQuery = "CREATE TABLE IF NOT EXISTS mytable (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "name TEXT, description TEXT, price INTEGER, stock INTEGER, available INTEGER, " +
+                "created TEXT, updated TEXT, category INTEGER, shop INTEGER)";
+        db.execSQL(createTableQuery);
+
+        String createImagesTableQuery = "CREATE TABLE IF NOT EXISTS images_table (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "image TEXT, product_id INTEGER, FOREIGN KEY(product_id) REFERENCES mytable(id))";
+        db.execSQL(createImagesTableQuery);
     }
 
 
@@ -30,15 +46,6 @@ public class MyDBHelper extends SQLiteOpenHelper {
     }
 
     private void createTables(SQLiteDatabase db) {
-        String createTableQuery = "CREATE TABLE IF NOT EXISTS mytable (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "name TEXT, description TEXT, price INTEGER, stock INTEGER, available INTEGER, " +
-                "created TEXT, updated TEXT, category INTEGER, shop INTEGER)";
-        db.execSQL(createTableQuery);
-
-        String createImagesTableQuery = "CREATE TABLE IF NOT EXISTS images_table (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "image TEXT, product_id INTEGER, FOREIGN KEY(product_id) REFERENCES mytable(id))";
-        db.execSQL(createImagesTableQuery);
-
         String createTableQueryPurches = "CREATE TABLE IF NOT EXISTS purches (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "name TEXT, description TEXT, price INTEGER, stock INTEGER, available INTEGER, " +
                 "created TEXT, updated TEXT, category INTEGER, shop INTEGER)";

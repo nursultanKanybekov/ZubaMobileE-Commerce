@@ -1,7 +1,7 @@
 package com.example.zuba.model;
 
 public class OrderItem {
-    private int price;
+    private double price;
     private int quantity;
     private int product;
 
@@ -11,11 +11,11 @@ public class OrderItem {
         this.product = product;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

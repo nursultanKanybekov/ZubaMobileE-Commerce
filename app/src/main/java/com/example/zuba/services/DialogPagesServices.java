@@ -23,7 +23,6 @@ import com.example.zuba.R;
 import com.example.zuba.model.OrderCreateModel;
 
 public class DialogPagesServices {
-    private OrderCreateModel orderCreateModel;
     private Context context;
     private ImageView profileCredit;
     private Switch switchAgreement;
@@ -41,9 +40,7 @@ public class DialogPagesServices {
         switchAgreement = view.findViewById(R.id.switchAgreement);
         profileCredit = view.findViewById(R.id.imageView5);
 
-        profileCredit.setOnClickListener(v -> {
-            openCamera();
-        });
+        profileCredit.setOnClickListener(v -> openCamera());
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(view)
@@ -61,7 +58,7 @@ public class DialogPagesServices {
             } else {
                 int term = Integer.parseInt(etTerm.getText().toString());
                 boolean agreement = switchAgreement.isChecked();
-                orderCreateModel = new OrderCreateModel(0, 2, term, 0, agreement, null, null);
+                OrderCreateModel orderCreateModel = new OrderCreateModel(1, 2, term, 0, agreement, null, null);
                 callback.onOrderCreated(orderCreateModel);
 
                 alertDialog.dismiss();
