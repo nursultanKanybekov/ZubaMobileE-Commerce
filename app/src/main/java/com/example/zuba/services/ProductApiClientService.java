@@ -470,4 +470,25 @@ public class ProductApiClientService {
             }
         });
     }
+
+    public void ifLogedIn() {
+        String token = retrieveToken(context);
+        if (token != null && !token.isEmpty()) {
+            String authorizationHeader = "Bearer " + token;
+            Call<GetUserDetailSerizlizerModel> call = autorRepo.getProfile(authorizationHeader);
+
+            call.enqueue(new Callback<GetUserDetailSerizlizerModel>() {
+                @Override
+                public void onResponse(Call<GetUserDetailSerizlizerModel> call, Response<GetUserDetailSerizlizerModel> response) {
+                    if (response.isSuccessful())
+                        context.startActivity(new Intent(context, PurchaseActivity.class));
+                }
+
+                @Override
+                public void onFailure(Call<GetUserDetailSerizlizerModel> call, Throwable t) {
+                    dialogPagesServices.confirmDialog(t.toString());
+                }
+            });
+        }
+    }
 }

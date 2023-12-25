@@ -29,9 +29,8 @@ public class LoginTabFragment extends Fragment {
         Button button = view.findViewById(R.id.login_button);
         EditText login = view.findViewById(R.id.login_email);
         EditText password = view.findViewById(R.id.login_password);
-        if (!retrieveToken().equals("")) {
-            startActivity(new Intent(getContext(), PurchaseActivity.class));
-        }
+
+        new ProductApiClientService(null, getContext()).ifLogedIn();
 
 //        MyDatabaseOperationsServices myDatabaseOperationsServices = new MyDatabaseOperationsServices(getContext());
 //        myDatabaseOperationsServices.open();
@@ -46,8 +45,4 @@ public class LoginTabFragment extends Fragment {
         return view;
     }
 
-    private String retrieveToken() {
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        return sharedPreferences.getString("token", null);
-    }
 }
