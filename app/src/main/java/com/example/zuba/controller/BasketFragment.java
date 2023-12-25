@@ -105,8 +105,7 @@ public class BasketFragment extends Fragment {
                     orderCreateModel.setAddress(addressSerialzerModel);
                     orderCreateModel.setOrder_item(orderItems);
                     productApiClientService.purches(orderCreateModel, basketAdapter);
-                } else productApiClientService.purches(new OrderCreateModel(1
-                        , 0, 0, 0, true,
+                } else productApiClientService.purches(new OrderCreateModel(1, 0, 0, 0, true,
                         addressSerialzerModel, orderItems), basketAdapter);
 
 

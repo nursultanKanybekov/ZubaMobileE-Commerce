@@ -73,18 +73,13 @@ public class PurchaseActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
                     != PackageManager.PERMISSION_GRANTED) {
-                // Permission is not granted, request it
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.READ_CONTACTS},
                         CONTACTS_PERMISSION_REQUEST_CODE);
             } else {
-                // Permission is already granted, proceed with your code
-                // e.g., retrieve contacts
                 getAllContacts(this);
             }
         } else {
-            // For devices running SDK versions lower than 23, no runtime permission checks are required.
-            // Proceed with your code, e.g., retrieve contacts
             getAllContacts(this);
         }
     }
@@ -96,7 +91,6 @@ public class PurchaseActivity extends AppCompatActivity {
 
         if (requestCode == CONTACTS_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, proceed with your code
                 new ProductApiClientService(this).sendContact(getAllContacts(this));
 
             } else {

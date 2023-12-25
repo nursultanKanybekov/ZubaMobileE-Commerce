@@ -44,7 +44,7 @@ public class SignupTabFragment extends Fragment {
     private Spinner country, region, village, gender;
     private Button signup_button, set_image_button;
     private String base64String;
-    private String countryS, regionS, villageS, genderS;
+    private String countryS, regionS, villageS, genderS="1";
     private ProductApiClientService productApiClientService;
     private List<CountryModel> countryModels;
     private List<RegionModel> regionModels;
@@ -66,7 +66,6 @@ public class SignupTabFragment extends Fragment {
         country = view.findViewById(R.id.initial_payment);
         region = view.findViewById(R.id.paid);
         village = view.findViewById(R.id.reminder);
-
 
         set_image_button = view.findViewById(R.id.set_image_button);
 
@@ -149,21 +148,19 @@ public class SignupTabFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 if (parentView.getItemAtPosition(position).toString().equals("Мужчина"))
-                    genderS = "0";
-                else genderS = "1";
+                    genderS = "1";
+                else genderS = "2";
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
-                genderS = "0";
+                genderS = "1";
             }
         });
     }
 
     private void setupSpinners() {
-        // Check if all data is available
         if (countryModels != null && regionModels != null && villageModels != null) {
-            // Now you can set up your spinners
             String countryArray[] = new String[countryModels.size()];
             String regionArray[] = new String[regionModels.size()];
             String villageArray[] = new String[villageModels.size()];
@@ -252,6 +249,7 @@ public class SignupTabFragment extends Fragment {
                 Bitmap selectedBitmap = resizeBitmap(selectedImageUri);
 
                 if (selectedBitmap != null) {
+                    base64String = "";
                     base64String = convertBitmapToBase64(selectedBitmap);
                     requireActivity().getSupportFragmentManager().beginTransaction().detach(this).attach(this).commit();
                 } else {
