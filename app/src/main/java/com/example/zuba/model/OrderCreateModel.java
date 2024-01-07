@@ -1,10 +1,14 @@
 package com.example.zuba.model;
 
+import android.graphics.Bitmap;
+
+import java.io.File;
 import java.util.List;
 
 public class OrderCreateModel {
     private double total;
     private int paid;
+    private File image;
     private int term;
     private double i_p;
     private boolean agreement;
@@ -19,6 +23,14 @@ public class OrderCreateModel {
         this.agreement = agreement;
         this.address = address;
         this.order_item = order_item;
+    }
+
+    public File getImage() {
+        return image;
+    }
+
+    public void setImage(File image) {
+        this.image = image;
     }
 
     public double getTotal() {

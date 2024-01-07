@@ -1,10 +1,17 @@
 package com.example.zuba.services;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,28 +26,39 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.widget.Toast;
 
+import com.example.zuba.ProfileImage;
 import com.example.zuba.R;
 import com.example.zuba.model.OrderCreateModel;
+
+import java.io.File;
+import java.io.IOException;
 
 public class DialogPagesServices {
     private Context context;
     private ImageView profileCredit;
     private Switch switchAgreement;
     private EditText etTerm, etIP;
+    private OrderDialogCallback callback;
+    private BroadcastReceiver receiver;
+    private int term;
+    private boolean agreement;
+    private Bitmap bitmapSelfie;
 
-    public DialogPagesServices(Context context) {
+    public DialogPagesServices(Context context, OrderDialogCallback callback) {
         this.context = context;
+        this.callback = callback;
     }
 
-    public void showFormDialog(OrderDialogCallback callback) {
+    public void showFormDialog() {
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_form, null);
-
         etTerm = view.findViewById(R.id.etTerm);
         etIP = view.findViewById(R.id.etIP);
         switchAgreement = view.findViewById(R.id.switchAgreement);
         profileCredit = view.findViewById(R.id.imageView5);
 
-        profileCredit.setOnClickListener(v -> openCamera());
+        initializeReceiver();
+
+        profileCredit.setOnClickListener(v -> context.startActivity(new Intent(context, ProfileImage.class)));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(view)
@@ -56,9 +74,15 @@ public class DialogPagesServices {
             if (!switchAgreement.isChecked()) {
                 confirmDialog("Пожалуйста, согласитесь на условию!");
             } else {
-                int term = Integer.parseInt(etTerm.getText().toString());
-                boolean agreement = switchAgreement.isChecked();
+                term = Integer.parseInt(etTerm.getText().toString());
+                agreement = switchAgreement.isChecked();
                 OrderCreateModel orderCreateModel = new OrderCreateModel(1, 2, term, 0, agreement, null, null);
+                File savedFile = BitmapUtilsServices.saveBitmapToFile(context, bitmapSelfie, "image.png");
+                if (savedFile != null) {
+                    orderCreateModel.setImage(savedFile);
+                } else {
+                    Toast.makeText(context, "Фото не может быть пустым", Toast.LENGTH_SHORT).show();
+                }
                 callback.onOrderCreated(orderCreateModel);
 
                 alertDialog.dismiss();
@@ -66,24 +90,26 @@ public class DialogPagesServices {
         });
     }
 
+    private void initializeReceiver() {
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if ("profile_photo_broadcast".equals(intent.getAction())) {
+                    byte[] byteArray = intent.getByteArrayExtra("profilePhoto");
+                    bitmapSelfie = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                }
+            }
+        };
+
+        context.registerReceiver(receiver, new IntentFilter("profile_photo_broadcast"));
+    }
 
     public void confirmDialog(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(message);
-        builder.setPositiveButton("Хорошо", (dialog, id) -> {
-            dialog.dismiss();
-        });
+        builder.setPositiveButton("Хорошо", (dialog, id) -> dialog.dismiss());
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
-    }
-
-    private void openCamera() {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            ((Activity) context).startActivityForResult(cameraIntent, 1);
-        } else {
-            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.CAMERA}, 1);
-        }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.zuba.controller;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -82,22 +83,24 @@ public class BasketFragment extends Fragment {
         for (int i = 0; i < productList.size(); i++) {
             orderItems.add(new OrderItem(productList.get(i).getPrice(), productList.get(i).getStock(), productList.get(i).getId()));
         }
+        dialogPagesServices = new DialogPagesServices(getContext(), new OrderDialogCallback() {
+            @Override
+            public void onOrderCreated(OrderCreateModel orderCreateModel) {
+                BasketFragment.this.orderCreateModel = orderCreateModel;
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(getContext(), "Отменено кредит", Toast.LENGTH_LONG).show();
+            }
+        });
 
         credit.setOnClickListener(v -> {
-            dialogPagesServices = new DialogPagesServices(getContext());
-            dialogPagesServices.showFormDialog(new OrderDialogCallback() {
-                @Override
-                public void onOrderCreated(OrderCreateModel orderCreateModel) {
-                    BasketFragment.this.orderCreateModel = orderCreateModel;
-                }
-
-                @Override
-                public void onCancel() {
-                    Toast.makeText(getContext(), "Отменено кредит", Toast.LENGTH_LONG).show();
-                }
-            });
+            dialogPagesServices.showFormDialog();
         });
+
         order.setOnClickListener(v -> {
+
             if (!exact_address.getText().toString().equals("")) {
                 addressSerialzerModel = new AddressSerialzerModel(exact_address.getText().toString(), countryS,
                         regionS, villageS);
@@ -108,8 +111,8 @@ public class BasketFragment extends Fragment {
                 } else productApiClientService.purches(new OrderCreateModel(1, 0, 0, 0, true,
                         addressSerialzerModel, orderItems), basketAdapter);
 
-
-            } else Toast.makeText(getContext(),"Адрес не может быть пустым", Toast.LENGTH_SHORT).show();
+            } else
+                Toast.makeText(getContext(), "Адрес не может быть пустым", Toast.LENGTH_SHORT).show();
         });
         myDatabaseOperationsServices.close();
         return view;

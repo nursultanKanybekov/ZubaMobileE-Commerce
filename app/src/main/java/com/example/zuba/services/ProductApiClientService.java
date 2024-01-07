@@ -89,7 +89,7 @@ public class ProductApiClientService {
         this.context = context;
         this.recyclerView = recyclerView;
         this.recyclerViewList = recyclerViewList;
-        this.dialogPagesServices = new DialogPagesServices(context);
+        this.dialogPagesServices = new DialogPagesServices(context, null);
     }
 
     public ProductApiClientService(RecyclerView recyclerView, Context context) {
@@ -102,7 +102,7 @@ public class ProductApiClientService {
                 .build();
         productService = retrofit.create(ProductRepo.class);
         autorRepo = retrofit.create(AutorRepo.class);
-        dialogPagesServices = new DialogPagesServices(context);
+        dialogPagesServices = new DialogPagesServices(context, null);
     }
 
     public ProductApiClientService(Context context) {
@@ -119,7 +119,7 @@ public class ProductApiClientService {
         regionApiRepo = retrofit.create(RegionApiRepo.class);
         villageApiRepo = retrofit.create(VillageApiRepo.class);
 
-        dialogPagesServices = new DialogPagesServices(context);
+        dialogPagesServices = new DialogPagesServices(context, null);
     }
 
     public void getProducts() {
@@ -396,6 +396,17 @@ public class ProductApiClientService {
                         basketAdapter.refreshFragment();
                         dialogPagesServices.confirmDialog("Поздравляю, скоро свяжется");
                     } else {
+                        RequestBody requestBody = call.request().body();
+                        if (requestBody != null) {
+                            try {
+                                Buffer buffer = new Buffer();
+                                requestBody.writeTo(buffer);
+                                String requestBodyString = buffer.readUtf8();
+                                System.out.println("Request Body: " + requestBodyString);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
                         dialogPagesServices.confirmDialog("Извините за неудобство, были проблемы \nможете заново заполнить поля и отправить");
                     }
                 }
