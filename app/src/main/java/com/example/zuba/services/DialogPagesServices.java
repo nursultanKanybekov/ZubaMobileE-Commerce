@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +44,7 @@ public class DialogPagesServices {
     private int term;
     private boolean agreement;
     private Bitmap bitmapSelfie;
+    private OrderCreateModel orderCreateModel;
 
     public DialogPagesServices(Context context, OrderDialogCallback callback) {
         this.context = context;
@@ -55,10 +57,15 @@ public class DialogPagesServices {
         etIP = view.findViewById(R.id.etIP);
         switchAgreement = view.findViewById(R.id.switchAgreement);
         profileCredit = view.findViewById(R.id.imageView5);
+        orderCreateModel = new OrderCreateModel();
 
-        initializeReceiver();
-
-        profileCredit.setOnClickListener(v -> context.startActivity(new Intent(context, ProfileImage.class)));
+        profileCredit.setOnClickListener(v -> {
+            Intent intent = new Intent(context, ProfileImage.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("modelKey", orderCreateModel);
+            intent.putExtras(bundle);
+            context.startActivity(intent);
+        });
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(view)
@@ -69,6 +76,7 @@ public class DialogPagesServices {
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
 
+
         Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
         positiveButton.setOnClickListener(v -> {
             if (!switchAgreement.isChecked()) {
@@ -76,13 +84,9 @@ public class DialogPagesServices {
             } else {
                 term = Integer.parseInt(etTerm.getText().toString());
                 agreement = switchAgreement.isChecked();
-                OrderCreateModel orderCreateModel = new OrderCreateModel(1, 2, term, 0, agreement, null, null);
-                File savedFile = BitmapUtilsServices.saveBitmapToFile(context, bitmapSelfie, "image.png");
-                if (savedFile != null) {
-                    orderCreateModel.setImage(savedFile);
-                } else {
-                    Toast.makeText(context, "Фото не может быть пустым", Toast.LENGTH_SHORT).show();
-                }
+                orderCreateModel.setTerm(term);
+                orderCreateModel.setAgreement(agreement);
+
                 callback.onOrderCreated(orderCreateModel);
 
                 alertDialog.dismiss();
@@ -97,6 +101,13 @@ public class DialogPagesServices {
                 if ("profile_photo_broadcast".equals(intent.getAction())) {
                     byte[] byteArray = intent.getByteArrayExtra("profilePhoto");
                     bitmapSelfie = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+
+                    File savedFile = BitmapUtilsServices.saveBitmapToFile(context, bitmapSelfie, "image.png");
+                    if (savedFile != null) {
+                        orderCreateModel.setImage(savedFile);
+                    } else {
+                        Toast.makeText(context, "Фото не может быть пустым", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         };

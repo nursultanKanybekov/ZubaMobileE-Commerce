@@ -3,9 +3,10 @@ package com.example.zuba.model;
 import android.graphics.Bitmap;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
 
-public class OrderCreateModel {
+public class OrderCreateModel implements Serializable {
     private double total;
     private int paid;
     private File image;
@@ -23,6 +24,10 @@ public class OrderCreateModel {
         this.agreement = agreement;
         this.address = address;
         this.order_item = order_item;
+    }
+
+    public OrderCreateModel() {
+        super();
     }
 
     public File getImage() {
